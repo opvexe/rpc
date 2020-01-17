@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
-	"fmt"
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
+	gw "grpc-helloworld-gateway/helloworld"
 	"log"
 	"net"
 	"net/http"
-	gw "grpc-helloworld-gateway/helloworld"
 	"os"
 	"os/signal"
+	"path"
+	"strings"
 	"syscall"
 )
 
@@ -53,10 +55,36 @@ func main() {
 		if err!=nil {
 			panic(err)
 		}
-		//cors := cors.AllowAll()
-		//serverMux := http.NewServeMux()
-		//serverMux.Handle("/", cors.Handler(grpcMux))
+		serverMux := http.NewServeMux()
+		serverMux.Handle("/",mux)
+		serverMux.HandleFunc("/swagger/", serveSwaggerFile)
+		//设置swagger
 		 http.ListenAndServe("localhost:8182", mux)
 	}()
 	<-stop
 }
+
+
+/*
+func serveSwaggerUI(mux *http.ServeMux) {
+	fileServer := http.FileServer(&assetfs.AssetFS{
+		Asset:    swagger.Asset,
+		AssetDir: swagger.AssetDir,
+		Prefix:   "third_party/swagger-ui",
+	})
+	prefix := "/swagger-ui/"
+	mux.Handle(prefix, http.StripPrefix(prefix, fileServer))
+}
+
+func serveSwaggerFile(w http.ResponseWriter, r *http.Request) {
+	if ! strings.HasSuffix(r.URL.Path, "swagger.json") {
+		log.Printf("Not Found: %s", r.URL.Path)
+		http.NotFound(w, r)
+		return
+	}
+	p := strings.TrimPrefix(r.URL.Path, "/swagger/")
+	p = path.Join(SwaggerDir, p)
+	log.Printf("Serving swagger-file: %s", p)
+	http.ServeFile(w, r, p)
+}
+ */

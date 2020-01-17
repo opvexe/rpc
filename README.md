@@ -3,6 +3,7 @@
 - 参考文献:https://studygolang.com/articles/11923?p=1
 - 参考文献:https://segmentfault.com/a/1190000013408485
 - 参考文献:https://github.com/grpc-ecosystem/grpc-gateway
+- 示例代码:https://github.com/go-up/go-examples
 
 安装grpc-gateway:
 
@@ -91,8 +92,50 @@ mux :=  runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, &r
 		//serverMux.Handle("/", cors.Handler(grpcMux))
 		 http.ListenAndServe("localhost:8182", mux)
 ```
+#### 1.2 Swagger  
 
-#### 1.2 etcd集群的搭建
+参考文献:https://segmentfault.com/a/1190000013513469
+
+生成`Swagger`的说明文件:
+
+```shell
+go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+```
+
+下载`Swagger UI`文件:
+
+```shell
+下载地址:
+https://github.com/swagger-api/swagger-ui
+==将其`dist`目录下的所有文件拷贝到我们项目中的`$GOPATH/src/grpc-hello-world/third_party/swagger-ui`去==
+```
+
+ 将`Swagger UI`转换为`Go`源代码：
+
+```shell
+go get -u github.com/jteeuwen/go-bindata/...
+```
+
+生成Go代码: [pkg/ui/data/swagger/datafile.go]创建夹会创建
+
+```shell
+go-bindata --nocompress -pkg swagger -o pkg/ui/data/swagger/datafile.go third_party/swagger-ui/...
+```
+
+检查:回到`pkg/ui/data/swagger`目录，检查是否存在`datafile.go`文件
+
+ `Swagger UI`文件服务器:
+
+```shell
+go get github.com/elazarl/go-bindata-assetfs/...
+```
+
+
+
+
+
+
+#### 1.3 etcd集群的搭建
 
 ```shell
 $ docker pull quay.io/coreos/etcd
